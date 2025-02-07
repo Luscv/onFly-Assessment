@@ -15,15 +15,23 @@
     <q-card-section style="width: 45%;">
       <div class="text-h5 text-weight-light">{{hotel?.name}}</div>
       <div class="text-grey-7">{{ hotel?.address?.city }}, {{ hotel?.address?.district }}</div>
-      <div class="flex q-col-gutter-xs">
-        <div class="text-grey-7">{{ hotel?.stars }}</div>
-        <q-rating
-
-          v-model="rating"
-          size="1.5em"
-          color="yellow"
-          readonly
-        />
+      <div class="flex ">
+        <div class="flex q-col-gutter-xs q-pr-sm bordered" >
+          <div class="text-grey-7">{{ hotel?.stars }}</div>
+          <q-rating
+            v-model="rating"
+            size="1.5em"
+            color="yellow"
+            readonly
+          />
+        </div>
+        <div class="flex text-subtitle2 text-grey-7 items-baseline q-pl-sm">
+          <q-icon
+            v-for="amenitie in hotel?.amenities" v-bind:key="amenitie.key"
+            class="q-px-xs"
+            :name="amenitieFormat(amenitie.key as string)"
+          />
+        </div>
 
       </div>
       <div class="q-mt-sm">
@@ -42,6 +50,7 @@
           padding="sm lg"
           rounded
           unelevated
+          no-caps
           color="primary"
           label="Selecionar"
           @click="emit('select', hotel)"
@@ -54,6 +63,7 @@
 <script setup lang="ts">
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { computed, ref } from 'vue';
+import { amenitieFormat } from 'src/models/utils/amenitieFormater';
 
 const rating = computed(() => Number(hotel?.stars))
 const slide = ref(1)
@@ -61,3 +71,21 @@ const slide = ref(1)
 const emit = defineEmits(['select'])
 const { hotel } = defineProps<{hotel: HotelEntity}>()
 </script>
+
+<style lang="css" scoped>
+
+.bordered {
+  position: relative;
+}
+
+.bordered::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 25%;
+  width: 1px;
+  height: 50%;
+  background-color: grey;
+}
+
+</style>

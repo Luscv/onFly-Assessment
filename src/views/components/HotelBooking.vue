@@ -9,7 +9,7 @@
         <span>Destino *</span>
         <q-input outlined v-model="searchbar"/>
         <div class="q-mt-md flex justify-end">
-          <q-btn rounded color="primary" label="Buscar"/>
+          <q-btn rounded no-caps color="primary" label="Buscar"/>
         </div>
       </q-card-section>
     </q-card>

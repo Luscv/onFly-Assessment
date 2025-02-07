@@ -31,10 +31,19 @@
       <span class="text-h6 text-weight-light">Facilidades do hotel</span>
       <q-separator/>
       <div class="q-my-md">
-        {{ hotel?.amenities }}
+        <div class="flex justify-evenly">
+          <div v-for="amenitie in hotel?.amenities" v-bind:key="amenitie.key" class="flex text-subtitle2 text-grey-7 items-baseline">
+            <q-icon
+              class="q-px-xs"
+              :name="amenitieFormat(amenitie.key as string)"
+            />
+            {{ amenitie.label }}
+          </div>
+        </div>
         <div class="flex justify-center q-mt-md">
           <q-btn
             padding="sm xl"
+            no-caps
             rounded
             outline
             color="primary"
@@ -55,9 +64,11 @@
 <script setup lang="ts">
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { computed, ref } from 'vue';
+import { amenitieFormat } from 'src/models/utils/amenitieFormater';
 
 const slide = ref(1)
 const {hotel} = defineProps<{ hotel: HotelEntity | undefined }>()
 const rating = computed(() => Number(hotel?.stars))
+
 
 </script>
