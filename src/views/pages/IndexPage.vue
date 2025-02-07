@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row justify-center">
+  <q-page class="row justify-center bg-grey-3">
     <HotelBooking/>
   </q-page>
 </template>

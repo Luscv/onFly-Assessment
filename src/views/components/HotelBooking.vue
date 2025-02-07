@@ -28,16 +28,18 @@
       </div>
     </div>
 
-    <q-card class="q-pa-sm">
-      <q-card-section>
-        <HotelCard
-          v-bind:key="hotel.id" v-for="hotel in hotelOptions"
-          :name="hotel.name"
-          :price="hotel.price"
-          :images="hotel.images"
-        />
-      </q-card-section>
-    </q-card>
+    <div>
+      <HotelCard
+        class="q-mb-md"
+        v-bind:key="hotel.id" v-for="hotel in hotelOptions"
+        :name="hotel.name"
+        :price="hotel.price"
+        :images="hotel.images"
+        :address="hotel.address"
+        :stars="hotel.stars"
+        :refundable="hotel.hasRefundableRoom"
+      />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
