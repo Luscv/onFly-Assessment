@@ -6,13 +6,11 @@
         <q-toolbar-title>
           <q-img width="128px" src="/public/main-logo.png"/>
         </q-toolbar-title>
-
-        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="isDrawerOpen" side="right" overlay behavior="mobile" elevated>
-      <!-- drawer content -->
+    <q-drawer v-model="isDrawerOpen" side="right" :width="800" overlay behavior="mobile" elevated>
+      <HotelDetails :hotel="selectedHotel"/>
     </q-drawer>
 
     <q-page-container>
@@ -23,12 +21,14 @@
 </template>
 
 <script setup lang="ts">
+import { HotelEntity } from 'src/models/entity/Hotel.entity'
+import HotelDetails from 'src/views/components/HotelDetails.vue'
 import { provide, ref } from 'vue'
 
 const isDrawerOpen = ref(false)
-const selectedHotel = ref(null)
+const selectedHotel = ref<HotelEntity>()
 
-const openRightDrawer = (hotel) => {
+const openRightDrawer = (hotel: HotelEntity) => {
   selectedHotel.value = hotel
   isDrawerOpen.value = true
 }
