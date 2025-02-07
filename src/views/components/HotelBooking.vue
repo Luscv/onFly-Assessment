@@ -32,13 +32,8 @@
       <HotelCard
         class="q-mb-md"
         v-bind:key="hotel.id" v-for="hotel in hotelOptions"
-        :name="hotel.name"
-        :price="hotel.price"
-        :images="hotel.images"
-        :address="hotel.address"
-        :stars="hotel.stars"
-        :refundable="hotel.hasRefundableRoom"
-        @select="openDrawer"
+        :hotel="hotel"
+        @select="() => openDrawer(hotel)"
       />
     </div>
   </div>
@@ -46,8 +41,10 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
 import HotelCard from './HotelCard.vue';
+import { HotelEntity } from 'src/models/entity/Hotel.entity';
 
-const openDrawer = inject('openDrawer')
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {})
 
 const searchbar = ''
 const destino = 'Hospedagem em Belo Horizonte'
