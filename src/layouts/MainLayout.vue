@@ -11,7 +11,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="rightDrawerOpen" side="right" overlay behavior="mobile" elevated>
+    <q-drawer v-model="isDrawerOpen" side="right" overlay behavior="mobile" elevated>
       <!-- drawer content -->
     </q-drawer>
 
@@ -22,19 +22,16 @@
   </q-layout>
 </template>
 
-<script>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { provide, ref } from 'vue'
 
-export default {
-  setup () {
-    const rightDrawerOpen = ref(false)
+const isDrawerOpen = ref(false)
+const selectedHotel = ref(null)
 
-    return {
-      rightDrawerOpen,
-      toggleRightDrawer () {
-        rightDrawerOpen.value = !rightDrawerOpen.value
-      }
-    }
-  }
+const openRightDrawer = (hotel) => {
+  selectedHotel.value = hotel
+  isDrawerOpen.value = true
 }
+
+provide('openDrawer', openRightDrawer)
 </script>

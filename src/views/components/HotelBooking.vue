@@ -38,13 +38,16 @@
         :address="hotel.address"
         :stars="hotel.stars"
         :refundable="hotel.hasRefundableRoom"
+        @select="openDrawer"
       />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 import HotelCard from './HotelCard.vue';
+
+const openDrawer = inject('openDrawer')
 
 const searchbar = ''
 const destino = 'Hospedagem em Belo Horizonte'

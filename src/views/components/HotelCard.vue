@@ -18,7 +18,7 @@
       <div class="flex q-col-gutter-xs">
         <div class="text-grey-7">{{ props.stars }}</div>
         <q-rating
-          
+
           v-model="rating"
           size="1.5em"
           color="yellow"
@@ -44,6 +44,7 @@
           unelevated
           color="primary"
           label="Selecionar"
+          @click="emit('select', props)"
         />
       </div>
 
@@ -55,6 +56,8 @@ import { computed, ref } from 'vue';
 
 const rating = computed(() => Number(props.stars))
 const slide = ref(1)
+
+const emit = defineEmits(['select'])
 const props = defineProps(
   {
     name: String,
