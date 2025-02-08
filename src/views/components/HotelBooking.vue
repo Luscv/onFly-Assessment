@@ -19,7 +19,7 @@
           @filter="filterPlaces"
         />
         <div class="q-mt-md flex justify-end">
-          <q-btn rounded no-caps color="primary" :label="selectedDestination ? 'Alterar Busca' : 'Buscar'" @click="searchHotels"/>
+          <q-btn rounded no-caps color="primary" :label="hasSearched ? 'Alterar Busca' : 'Buscar'" @click="searchHotels"/>
         </div>
       </q-card-section>
     </q-card>
@@ -39,7 +39,7 @@
     </div>
 
     <div>
-      <q-infinite-scroll ref="infiniteScrollRef" @load="onLoad" @update="updateScroll">
+      <q-infinite-scroll  @load="onLoad">
         <HotelCard
           class="q-mb-md"
           v-bind:key="hotel.id" v-for="hotel in displayedHotels"
@@ -65,8 +65,6 @@ import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
 import { PlaceEntity } from 'src/models/entity/Place.entity';
 
-const infiniteScrollRef = ref<InstanceType<typeof import('quasar')['QInfiniteScroll']> | null>(null);
-
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {})
 
@@ -80,7 +78,9 @@ const hotels = ref<HotelEntity[]>([])
 const displayedHotels = ref<HotelEntity[]>([])
 const perPage = 10
 const hotelsLoaded = ref(0)
+
 const doneList = ref(false)
+const hasSearched = ref(false)
 
 const places = ref<PlaceEntity[]>([])
 const filteredPlaces = ref<PlaceEntity[]>([])
@@ -137,6 +137,7 @@ const searchHotels = async () => {
   hotelsLoaded.value = displayedHotels.value.length
 
   doneList.value = hotels.value.length === 0
+  hasSearched.value = true
 }
 
 const onLoad = (index: number, done: any) => {
@@ -145,6 +146,7 @@ const onLoad = (index: number, done: any) => {
       ...displayedHotels.value,
       ...hotels.value.slice(hotelsLoaded.value, hotelsLoaded.value + perPage)
     ]
+    displayedHotels.value = sortHotels(hotels.value as HotelEntity[], sort.value)
     hotelsLoaded.value += perPage
     if(hotelsLoaded.value >= hotels.value.length){
       doneList.value = true
@@ -155,24 +157,8 @@ const onLoad = (index: number, done: any) => {
   }, 500)
 }
 
-const updateScroll = () => {
-  if (infiniteScrollRef.value) {
-    infiniteScrollRef.value.updateScrollTarget();
-  }
-}
-
 watch(sort, (newVal) => {
-  displayedHotels.value = sortHotels(hotels.value as HotelEntity[], newVal)
-
+  displayedHotels.value = sortHotels(displayedHotels.value as HotelEntity[], newVal)
 })
 
-watch(displayedHotels, () => {
-  updateScroll()
-})
-
-onMounted(() => {
-  if (infiniteScrollRef.value) {
-    infiniteScrollRef.value.updateScrollTarget()
-  }
-})
 </script>
