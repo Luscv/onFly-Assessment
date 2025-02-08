@@ -52,6 +52,9 @@
           </div>
         </template>
       </q-infinite-scroll>
+      <div v-if="doneList" class="flex justify-center q-mb-lg q-pt-md text-h6 text-weight-light">
+        Não há hotéis para listar
+      </div>
     </div>
   </div>
 </template>
@@ -77,6 +80,7 @@ const hotels = ref<HotelEntity[]>([])
 const displayedHotels = ref<HotelEntity[]>([])
 const perPage = 10
 const hotelsLoaded = ref(0)
+const doneList = ref(false)
 
 const places = ref<PlaceEntity[]>([])
 const filteredPlaces = ref<PlaceEntity[]>([])
@@ -130,20 +134,23 @@ const searchHotels = async () => {
   }
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
   displayedHotels.value = hotels.value.slice(0, perPage)
-  hotelsLoaded.value = perPage
+  hotelsLoaded.value = displayedHotels.value.length
+
+  doneList.value = hotels.value.length === 0
 }
 
 const onLoad = (index: number, done: any) => {
   setTimeout(() => {
     displayedHotels.value = [
-        ...displayedHotels.value,
-        ...hotels.value.slice(hotelsLoaded.value, hotelsLoaded.value + perPage)
-      ]
-      hotelsLoaded.value += perPage
-    if(hotelsLoaded.value < hotels.value.length){
-      done()
-    } else {
+      ...displayedHotels.value,
+      ...hotels.value.slice(hotelsLoaded.value, hotelsLoaded.value + perPage)
+    ]
+    hotelsLoaded.value += perPage
+    if(hotelsLoaded.value >= hotels.value.length){
+      doneList.value = true
       done(true)
+    } else {
+      done()
     }
   }, 500)
 }
