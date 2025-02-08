@@ -55,7 +55,7 @@
       <q-infinite-scroll  @load="onLoad">
         <HotelCard
           class="q-mb-md"
-          v-bind:key="hotel.id" v-for="hotel in displayedHotels"
+          v-bind:key="hotel.id" v-for="hotel in filteredHotels"
           :hotel="hotel"
           @select="() => openDrawer(hotel)"
         />
@@ -72,7 +72,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, ref } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
@@ -90,7 +90,6 @@ const sort = ref<string>('Recomendados')
 const options = ['Recomendados', 'Melhor avaliados']
 
 const hotels = ref<HotelEntity[]>([])
-const displayedHotels = ref<HotelEntity[]>([])
 
 const perPage = 10
 const hotelsLoaded = ref(0)
@@ -105,7 +104,6 @@ const filteredPlaces = ref<PlaceEntity[]>([])
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 fetchHotels().then((data: any) => {
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
-  displayedHotels.value = hotels.value.slice(0, perPage)
   hotelsLoaded.value = perPage
 });
 
@@ -150,9 +148,7 @@ const searchHotels = async () => {
     data = await fetchHotels()
   }
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
-  displayedHotels.value = hotels.value.slice(0, perPage)
-  hotelsLoaded.value += perPage
-
+  hotelsLoaded.value = perPage
   doneList.value = hotels.value.length === 0
   hasSearched.value = true
 }
@@ -166,15 +162,8 @@ const validateAndSearch = () => {
   formRef.value?.resetValidation()
 }
 
-
-
 const onLoad = (index: number, done: any) => {
   setTimeout(() => {
-    displayedHotels.value = [
-      ...displayedHotels.value,
-      ...hotels.value.slice(hotelsLoaded.value, hotelsLoaded.value + perPage)
-    ]
-    displayedHotels.value = sortHotels(displayedHotels.value as HotelEntity[], sort.value)
     hotelsLoaded.value += perPage
     if(hotelsLoaded.value >= hotels.value.length){
       doneList.value = true
@@ -185,9 +174,13 @@ const onLoad = (index: number, done: any) => {
   }, 1000)
 }
 
-watch(sort, (newVal) => {
-  displayedHotels.value = sortHotels(displayedHotels.value as HotelEntity[], newVal)
+const filteredHotels = computed(() => {
+  let filtered = hotels.value
+  if(nameFilter.value){
+    filtered = filtered.filter(hotel =>
+      hotel.name?.toLowerCase().includes(nameFilter.value.toLowerCase())
+    )
+  }
+  return sortHotels(filtered.slice(0, hotelsLoaded.value), sort.value)
 })
-
-
 </script>
