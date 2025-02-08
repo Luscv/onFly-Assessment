@@ -34,7 +34,7 @@
       </div>
       <div class="flex q-gutter-sm items-baseline">
         <span>Organizar por</span>
-        <q-select borderless class="text-primary" v-model="model" :options="options"/>
+        <q-select borderless class="text-primary" v-model="sort" :options="options"/>
       </div>
     </div>
 
@@ -49,7 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
@@ -61,7 +61,7 @@ const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {}
 const selectedDestination = ref<PlaceEntity>()
 const destino = ref('Hospedagem em Brasil')
 
-const model = ref('Recomendados')
+const sort = ref('Recomendados')
 const options = ['Recomendados', 'Melhor avaliados']
 
 const hotels = ref<HotelEntity[]>([])
@@ -71,7 +71,7 @@ const filteredPlaces = ref<PlaceEntity[]>([])
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 fetchHotels().then((data: any) => {
-  hotels.value = data
+  hotels.value = sortHotels(data as HotelEntity[], sort.value)
 });
 
 fetchPlaces().then(data => {
@@ -90,18 +90,34 @@ const filterPlaces = (input: string, update: (fn: ()=> void) => void) => {
   })
 }
 
-
+const sortHotels = (hotels: HotelEntity[], type: string) => {
+  if(type === 'Recomendados'){
+    return hotels.sort((a,b) => {
+      const priceA = a.price ?? 0
+      const priceB = b.price ?? 0
+      return priceA - priceB;
+    })
+  }
+  return hotels.sort((a, b) => {
+    const starsA = Number(a.stars) ?? 0
+    const starsB = Number(b.stars) ?? 0
+    return starsB - starsA;
+  })
+}
 
 const searchHotels = async () => {
+  let data: unknown[]
   if(selectedDestination.value){
     destino.value = `Hospedagem em ${selectedDestination.value.fullname}`
-    const data = await fetchHotels(selectedDestination.value.placeId)
-    hotels.value = data as HotelEntity[]
+    data = await fetchHotels(selectedDestination.value.placeId)
   } else {
     destino.value = 'Hospedagem em Brasil'
-    const data = await fetchHotels()
-    hotels.value = data as HotelEntity[]
+    data = await fetchHotels()
   }
-
+  hotels.value = sortHotels(data as HotelEntity[], sort.value)
 }
+
+watch(sort, (newVal) => {
+  hotels.value = sortHotels(hotels.value as HotelEntity[], newVal)
+})
 </script>
