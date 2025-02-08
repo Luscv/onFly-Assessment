@@ -25,7 +25,7 @@ import { HotelEntity } from 'src/models/entity/Hotel.entity'
 import HotelDetails from 'src/views/components/HotelDetails.vue'
 import { provide, ref } from 'vue'
 
-const isDrawerOpen = ref(false)
+const isDrawerOpen = ref<boolean>(false)
 const selectedHotel = ref<HotelEntity>()
 
 const openRightDrawer = (hotel: HotelEntity) => {
