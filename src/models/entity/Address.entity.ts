@@ -4,7 +4,7 @@ import { IBaseModel } from "../shared/base-model";
 export class AddressEntity{
   street?: string;
   number?: string;
-  district?: string;
+  district?: string | null;
   city?: string;
   state?: string;
   country?: string;

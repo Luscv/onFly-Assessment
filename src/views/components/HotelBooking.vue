@@ -9,10 +9,18 @@
         <span>Destino *</span>
         <q-select
           outlined
-          v-model="searchbar"
+          v-model="selectedDestination"
+          use-input
+          input-debounce="300"
+          clearable
+          :options="filteredPlaces"
+          option-value="placeId"
+          option-label="fullname"
+          map-options
+          @filter="filterPlaces"
         />
         <div class="q-mt-md flex justify-end">
-          <q-btn rounded no-caps color="primary" label="Buscar"/>
+          <q-btn rounded no-caps color="primary" label="Buscar" @click="searchHotels"/>
         </div>
       </q-card-section>
     </q-card>
@@ -34,7 +42,7 @@
     <div>
       <HotelCard
         class="q-mb-md"
-        v-bind:key="hotel.id" v-for="hotel in hotelOptions"
+        v-bind:key="hotel.id" v-for="hotel in hotels"
         :hotel="hotel"
         @select="() => openDrawer(hotel)"
       />
@@ -42,19 +50,56 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
-import { fetchHotels } from 'src/controller/services/getData';
+import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
+import { PlaceEntity } from 'src/models/entity/Place.entity';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {})
 
-const searchbar = ref('')
-const destino = 'Hospedagem em Belo Horizonte'
-
-
+const selectedDestination = ref<PlaceEntity>()
+const destino = ref('Hospedagem em Brasil')
 
 const model = ref('Recomendados')
 const options = ['Recomendados', 'Melhor avaliados']
+
+const hotels = ref<HotelEntity[]>([])
+
+fetchHotels().then((data: any) => {
+  hotels.value = data
+});
+
+const places = ref<PlaceEntity[]>([])
+const filteredPlaces = ref<PlaceEntity[]>([])
+
+fetchPlaces().then(data => {
+  places.value = data.map(place => ({
+    placeId: place.placeId,
+    fullname: `${place.name}, ${place?.state?.shortname}`
+  }))
+  filteredPlaces.value = places.value
+
+})
+
+const filterPlaces = (input: string, update: (fn: ()=> void) => void) => {
+  update(() => {
+    filteredPlaces.value = input
+      ? places.value.filter(place => place.fullname?.toLowerCase().includes(input.toLowerCase()))
+      : places.value
+  })
+}
+
+const searchHotels = async () => {
+  if(selectedDestination.value){
+    destino.value = `Hospedagem em ${selectedDestination.value.fullname}`
+    const data = await fetchHotels(selectedDestination.value.placeId)
+    hotels.value = data as HotelEntity[]
+  } else {
+    destino.value = `Hospedagem em Brasil`
+    const data = await fetchHotels()
+    hotels.value = data as HotelEntity[]
+  }
+}
 </script>
