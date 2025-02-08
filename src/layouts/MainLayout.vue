@@ -4,7 +4,7 @@
     <q-header elevated class="bg-white text-white">
       <q-toolbar>
         <q-toolbar-title>
-          <q-img width="128px" src="/public/main-logo.png"/>
+          <q-img width="128px" src="main-logo.png"/>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
