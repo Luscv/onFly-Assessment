@@ -5,23 +5,26 @@
         <span class="text-h6">Reservar hotel</span>
       </q-card-section>
       <q-separator/>
-      <q-card-section>
-        <span>Destino *</span>
-        <q-select
-          outlined
-          v-model="selectedDestination"
-          use-input
-          input-debounce="300"
-          :options="filteredPlaces"
-          option-value="placeId"
-          option-label="fullname"
-          map-options
-          @filter="filterPlaces"
-        />
-        <div class="q-mt-md flex justify-end">
-          <q-btn rounded no-caps color="primary" :label="hasSearched ? 'Alterar Busca' : 'Buscar'" @click="searchHotels"/>
-        </div>
-      </q-card-section>
+      <q-form ref="formRef" @submit="validateAndSearch" >
+        <q-card-section>
+          <span>Destino<span class="text-negative"> *</span></span>
+          <q-select
+            outlined
+            v-model="selectedDestination"
+            use-input
+            input-debounce="300"
+            :options="filteredPlaces"
+            option-value="placeId"
+            option-label="fullname"
+            map-options
+            @filter="filterPlaces"
+            :rules="[val => !!val || 'Destino é obrigatório']"
+          />
+          <div class="q-mt-md flex justify-end">
+            <q-btn rounded no-caps color="primary" :label="hasSearched ? 'Alterar Busca' : 'Buscar'" type="submit"/>
+          </div>
+        </q-card-section>
+      </q-form>
     </q-card>
 
     <div class="flex justify-between items-baseline">
@@ -59,19 +62,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, ref, watch } from 'vue';
+import { inject, ref, watch } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
 import { PlaceEntity } from 'src/models/entity/Place.entity';
+import { QForm } from 'quasar';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {})
 
 const selectedDestination = ref<PlaceEntity>()
-const destino = ref('Hospedagem em Brasil')
+const destino = ref<string>('Hospedagem em Brasil')
 
-const sort = ref('Recomendados')
+const sort = ref<string>('Recomendados')
 const options = ['Recomendados', 'Melhor avaliados']
 
 const hotels = ref<HotelEntity[]>([])
@@ -79,8 +83,9 @@ const displayedHotels = ref<HotelEntity[]>([])
 const perPage = 10
 const hotelsLoaded = ref(0)
 
-const doneList = ref(false)
-const hasSearched = ref(false)
+const doneList = ref<boolean>(false)
+const hasSearched = ref<boolean>(false)
+const formRef = ref<QForm | null>(null)
 
 const places = ref<PlaceEntity[]>([])
 const filteredPlaces = ref<PlaceEntity[]>([])
@@ -92,7 +97,7 @@ fetchHotels().then((data: any) => {
   hotelsLoaded.value = perPage
 });
 
-fetchPlaces().then(data => {
+fetchPlaces().then((data: PlaceEntity[]) => {
   places.value = data.map(place => ({
     placeId: place.placeId,
     fullname: `${place.name}, ${place?.state?.shortname}`
@@ -108,7 +113,7 @@ const filterPlaces = (input: string, update: (fn: ()=> void) => void) => {
   })
 }
 
-const sortHotels = (hotels: HotelEntity[], type: string) => {
+const sortHotels = (hotels: HotelEntity[], type: string): HotelEntity[] => {
   if(type === 'Recomendados'){
     return hotels.sort((a,b) => {
       const priceA = a.price ?? 0
@@ -139,6 +144,17 @@ const searchHotels = async () => {
   doneList.value = hotels.value.length === 0
   hasSearched.value = true
 }
+
+const validateAndSearch = () => {
+  formRef.value?.validate().then(sucess => {
+    if(sucess) {
+      searchHotels()
+    }
+  })
+  formRef.value?.resetValidation()
+}
+
+
 
 const onLoad = (index: number, done: any) => {
   setTimeout(() => {
