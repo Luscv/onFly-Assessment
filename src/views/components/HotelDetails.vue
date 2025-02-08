@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { computed, ref } from 'vue';
-import { amenitieFormat } from 'src/models/utils/amenitieFormater';
+import { amenitieFormat } from 'src/models/utils/amenityFormater';
 
 const slide = ref(1)
 const {hotel} = defineProps<{ hotel: HotelEntity | undefined }>()

@@ -12,7 +12,6 @@
           v-model="selectedDestination"
           use-input
           input-debounce="300"
-          clearable
           :options="filteredPlaces"
           option-value="placeId"
           option-label="fullname"
@@ -20,7 +19,7 @@
           @filter="filterPlaces"
         />
         <div class="q-mt-md flex justify-end">
-          <q-btn rounded no-caps color="primary" label="Buscar" @click="searchHotels"/>
+          <q-btn rounded no-caps color="primary" :label="selectedDestination ? 'Alterar Busca' : 'Buscar'" @click="searchHotels"/>
         </div>
       </q-card-section>
     </q-card>
@@ -50,7 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue';
+import { inject, ref } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
@@ -67,12 +66,13 @@ const options = ['Recomendados', 'Melhor avaliados']
 
 const hotels = ref<HotelEntity[]>([])
 
+const places = ref<PlaceEntity[]>([])
+const filteredPlaces = ref<PlaceEntity[]>([])
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 fetchHotels().then((data: any) => {
   hotels.value = data
 });
-
-const places = ref<PlaceEntity[]>([])
-const filteredPlaces = ref<PlaceEntity[]>([])
 
 fetchPlaces().then(data => {
   places.value = data.map(place => ({
@@ -80,7 +80,6 @@ fetchPlaces().then(data => {
     fullname: `${place.name}, ${place?.state?.shortname}`
   }))
   filteredPlaces.value = places.value
-
 })
 
 const filterPlaces = (input: string, update: (fn: ()=> void) => void) => {
@@ -91,15 +90,18 @@ const filterPlaces = (input: string, update: (fn: ()=> void) => void) => {
   })
 }
 
+
+
 const searchHotels = async () => {
   if(selectedDestination.value){
     destino.value = `Hospedagem em ${selectedDestination.value.fullname}`
     const data = await fetchHotels(selectedDestination.value.placeId)
     hotels.value = data as HotelEntity[]
   } else {
-    destino.value = `Hospedagem em Brasil`
+    destino.value = 'Hospedagem em Brasil'
     const data = await fetchHotels()
     hotels.value = data as HotelEntity[]
   }
+
 }
 </script>
