@@ -39,21 +39,30 @@
     </div>
 
     <div>
-      <HotelCard
-        class="q-mb-md"
-        v-bind:key="hotel.id" v-for="hotel in hotels"
-        :hotel="hotel"
-        @select="() => openDrawer(hotel)"
-      />
+      <q-infinite-scroll ref="infiniteScrollRef" @load="onLoad" @update="updateScroll">
+        <HotelCard
+          class="q-mb-md"
+          v-bind:key="hotel.id" v-for="hotel in displayedHotels"
+          :hotel="hotel"
+          @select="() => openDrawer(hotel)"
+        />
+        <template v-slot:loading>
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots color="primary" size="40px" />
+          </div>
+        </template>
+      </q-infinite-scroll>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
 import { PlaceEntity } from 'src/models/entity/Place.entity';
+
+const infiniteScrollRef = ref<InstanceType<typeof import('quasar')['QInfiniteScroll']> | null>(null);
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {})
@@ -65,6 +74,9 @@ const sort = ref('Recomendados')
 const options = ['Recomendados', 'Melhor avaliados']
 
 const hotels = ref<HotelEntity[]>([])
+const displayedHotels = ref<HotelEntity[]>([])
+const perPage = 10
+const hotelsLoaded = ref(0)
 
 const places = ref<PlaceEntity[]>([])
 const filteredPlaces = ref<PlaceEntity[]>([])
@@ -72,6 +84,8 @@ const filteredPlaces = ref<PlaceEntity[]>([])
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 fetchHotels().then((data: any) => {
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
+  displayedHotels.value = hotels.value.slice(0, perPage)
+  hotelsLoaded.value = perPage
 });
 
 fetchPlaces().then(data => {
@@ -115,9 +129,43 @@ const searchHotels = async () => {
     data = await fetchHotels()
   }
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
+  displayedHotels.value = hotels.value.slice(0, perPage)
+  hotelsLoaded.value = perPage
+}
+
+const onLoad = (index: number, done: any) => {
+  setTimeout(() => {
+    displayedHotels.value = [
+        ...displayedHotels.value,
+        ...hotels.value.slice(hotelsLoaded.value, hotelsLoaded.value + perPage)
+      ]
+      hotelsLoaded.value += perPage
+    if(hotelsLoaded.value < hotels.value.length){
+      done()
+    } else {
+      done(true)
+    }
+  }, 500)
+}
+
+const updateScroll = () => {
+  if (infiniteScrollRef.value) {
+    infiniteScrollRef.value.updateScrollTarget();
+  }
 }
 
 watch(sort, (newVal) => {
-  hotels.value = sortHotels(hotels.value as HotelEntity[], newVal)
+  displayedHotels.value = sortHotels(hotels.value as HotelEntity[], newVal)
+
+})
+
+watch(displayedHotels, () => {
+  updateScroll()
+})
+
+onMounted(() => {
+  if (infiniteScrollRef.value) {
+    infiniteScrollRef.value.updateScrollTarget()
+  }
 })
 </script>
