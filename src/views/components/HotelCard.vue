@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { computed, ref } from 'vue';
-import { amenitieFormat } from 'src/models/utils/amenitieFormater';
+import { amenitieFormat } from 'src/models/utils/amenityFormater';
 
 const rating = computed(() => Number(hotel?.stars))
 const slide = ref(1)
