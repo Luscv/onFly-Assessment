@@ -35,9 +35,19 @@
           <q-breadcrumbs-el :label="destino" />
         </q-breadcrumbs>
       </div>
-      <div class="flex q-gutter-sm items-baseline">
-        <span>Organizar por</span>
-        <q-select borderless class="text-primary" v-model="sort" :options="options"/>
+      <div class="flex q-gutter-md items-baseline">
+        <div>
+          <q-input v-model="nameFilter" label="Filtrar por nome" clearable dense>
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+
+        </div>
+        <div class="flex q-gutter-sm items-baseline">
+          <span>Organizar por</span>
+          <q-select borderless class="text-primary" v-model="sort" :options="options"/>
+        </div>
       </div>
     </div>
 
@@ -62,7 +72,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import HotelCard from './HotelCard.vue';
 import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { fetchHotels, fetchPlaces } from 'src/controller/services/getData';
@@ -74,12 +84,14 @@ const openDrawer = inject<((hotel: HotelEntity) => void)>('openDrawer', () => {}
 
 const selectedDestination = ref<PlaceEntity>()
 const destino = ref<string>('Hospedagem em Brasil')
+const nameFilter = ref<string>('')
 
 const sort = ref<string>('Recomendados')
 const options = ['Recomendados', 'Melhor avaliados']
 
 const hotels = ref<HotelEntity[]>([])
 const displayedHotels = ref<HotelEntity[]>([])
+
 const perPage = 10
 const hotelsLoaded = ref(0)
 
@@ -176,5 +188,6 @@ const onLoad = (index: number, done: any) => {
 watch(sort, (newVal) => {
   displayedHotels.value = sortHotels(displayedHotels.value as HotelEntity[], newVal)
 })
+
 
 </script>
