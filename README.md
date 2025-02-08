@@ -1,41 +1,22 @@
-# Quasar App (onfly-assessment)
+# onFly - SPA
 
-onFly assessment
+Essa SPA tem como finalidade, listar hoteis em diferentes destinos e listar também informações sobre o mesmo.
 
-## Install the dependencies
-```bash
-yarn
-# or
-npm install
-```
+![home](page-1.png)
+![details](page-2.png)
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
+## Features
+- Filtrar hoteis por destino e nome
+- Filtro de destinos com autocomplete
+- Scroll infinito listando hoteis a medida que o usuario usa o scroll
+- Ordenação por recomendados e melhor avaliados
+- Drawer de detalhes dos hotéis
+- Uso de typescript, classes para os dados
 
+## Iniciando o projeto
+1. Instalando dependencias: `npm install`
+2. Rodando o servidor de desenvolvimento: `npm run dev`
 
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
-
-
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+## Tecnologias utilizadas
+- Typescript
+- Quasar
