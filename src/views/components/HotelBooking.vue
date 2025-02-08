@@ -139,7 +139,7 @@ const searchHotels = async () => {
   }
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
   displayedHotels.value = hotels.value.slice(0, perPage)
-  hotelsLoaded.value = displayedHotels.value.length
+  hotelsLoaded.value += perPage
 
   doneList.value = hotels.value.length === 0
   hasSearched.value = true
@@ -162,7 +162,7 @@ const onLoad = (index: number, done: any) => {
       ...displayedHotels.value,
       ...hotels.value.slice(hotelsLoaded.value, hotelsLoaded.value + perPage)
     ]
-    displayedHotels.value = sortHotels(hotels.value as HotelEntity[], sort.value)
+    displayedHotels.value = sortHotels(displayedHotels.value as HotelEntity[], sort.value)
     hotelsLoaded.value += perPage
     if(hotelsLoaded.value >= hotels.value.length){
       doneList.value = true
@@ -170,7 +170,7 @@ const onLoad = (index: number, done: any) => {
     } else {
       done()
     }
-  }, 500)
+  }, 1000)
 }
 
 watch(sort, (newVal) => {

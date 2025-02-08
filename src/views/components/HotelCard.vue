@@ -27,7 +27,7 @@
         </div>
         <div class="flex text-subtitle2 text-grey-7 items-baseline q-pl-sm">
           <q-icon
-            v-for="amenitie in hotel?.amenities" v-bind:key="amenitie.key"
+            v-for="amenitie in hotel?.amenities?.filter(amenitie => amenitie.key)" v-bind:key="amenitie.key"
             class="q-px-xs"
             :name="amenitieFormat(amenitie.key as string)"
           />

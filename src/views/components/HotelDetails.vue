@@ -31,13 +31,19 @@
       <span class="text-h6 text-weight-light">Facilidades do hotel</span>
       <q-separator/>
       <div class="q-my-md">
-        <div class="flex justify-evenly">
-          <div v-for="amenitie in hotel?.amenities" v-bind:key="amenitie.key" class="flex text-subtitle2 text-grey-7 items-baseline">
-            <q-icon
-              class="q-px-xs"
-              :name="amenitieFormat(amenitie.key as string)"
-            />
-            {{ amenitie.label }}
+        <div class="row justify-center">
+          <div
+            v-for="amenitie in (showAllAmenities ? hotel?.amenities?.filter(amenitie => amenitie.key) : hotel?.amenities?.filter(amenitie => amenitie.key).slice(0, 4))"
+            v-bind:key="amenitie.key"
+            class="col-3 flex justify-evenly text-subtitle2 text-grey-7 items-baseline"
+          >
+            <div>
+              <q-icon
+                class="q-px-xs"
+                :name="amenitieFormat(amenitie.key as string)"
+              />
+              {{ amenitie.label }}
+            </div>
           </div>
         </div>
         <div class="flex justify-center q-mt-md">
@@ -47,7 +53,8 @@
             rounded
             outline
             color="primary"
-            label="Mostrar todas as facilidades"
+            :label="showAllAmenities ? 'Mostrar menos facilidades' : 'Mostrar todas as facilidades'"
+            @click="showAllAmenities = !showAllAmenities"
           />
         </div>
       </div>
@@ -66,9 +73,10 @@ import { HotelEntity } from 'src/models/entity/Hotel.entity';
 import { computed, ref } from 'vue';
 import { amenitieFormat } from 'src/models/utils/amenityFormater';
 
-const slide = ref(1)
+const slide = ref<number>(1)
 const {hotel} = defineProps<{ hotel: HotelEntity | undefined }>()
 const rating = computed(() => Number(hotel?.stars))
+const showAllAmenities = ref<boolean>(false)
 
 
 </script>
