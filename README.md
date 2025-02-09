@@ -12,6 +12,7 @@ Essa SPA tem como finalidade, listar hoteis em diferentes destinos e listar tamb
 - Ordenação por recomendados e melhor avaliados
 - Drawer de detalhes dos hotéis
 - Uso de typescript, classes para os dados
+- Teste unitário de componente (checar se esta listando hoteis)
 
 ## Iniciando o projeto
 1. Instalando dependencias: `npm install`
@@ -20,3 +21,4 @@ Essa SPA tem como finalidade, listar hoteis em diferentes destinos e listar tamb
 ## Tecnologias utilizadas
 - Typescript
 - Quasar
+- Vitest
