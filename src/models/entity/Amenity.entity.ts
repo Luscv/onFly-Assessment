@@ -1,4 +1,4 @@
-import { IBaseModel } from "../shared/base-model";
+import { IBaseModel } from '../shared/base-model';
 
 export class AmenityEntity{
   key?: string;
@@ -10,3 +10,4 @@ export class AmenityEntity{
     }
   }
 }
+

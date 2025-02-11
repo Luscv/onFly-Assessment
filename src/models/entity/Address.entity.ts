@@ -1,5 +1,5 @@
 
-import { IBaseModel } from "../shared/base-model";
+import { IBaseModel } from '../shared/base-model';
 
 export class AddressEntity{
   street?: string;

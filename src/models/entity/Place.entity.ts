@@ -1,4 +1,4 @@
-import { StateEntity } from "./State.entity";
+import { StateEntity } from './State.entity';
 
 export class PlaceEntity {
   name?: string;
