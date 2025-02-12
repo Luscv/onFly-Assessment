@@ -101,8 +101,7 @@ const formRef = ref<QForm | null>(null)
 const places = ref<PlaceEntity[]>([])
 const filteredPlaces = ref<PlaceEntity[]>([])
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-fetchHotels().then((data: any) => {
+fetchHotels().then((data: HotelEntity[]) => {
   hotels.value = sortHotels(data as HotelEntity[], sort.value)
   hotelsLoaded.value = perPage
 });
@@ -139,7 +138,7 @@ const sortHotels = (hotels: HotelEntity[], type: string): HotelEntity[] => {
 }
 
 const searchHotels = async () => {
-  let data: unknown[]
+  let data: HotelEntity[]
   if(selectedDestination.value){
     destino.value = `Hospedagem em ${selectedDestination.value.fullname}`
     data = await fetchHotels(selectedDestination.value.placeId)

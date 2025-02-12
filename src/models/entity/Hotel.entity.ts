@@ -29,7 +29,7 @@ function Sanitize(): PropertyDecorator {
   }
 }
 
-class HotelEntity implements IBaseModel{
+export class HotelEntity implements IBaseModel{
   id: number | string | undefined;
   @Sanitize()
   favorite?: boolean;
@@ -47,7 +47,7 @@ class HotelEntity implements IBaseModel{
   thumb?: string;
 
   @Sanitize()
-  amenities?: Array<AmenityEntity>;
+  amenities?: Array<AmenityEntity | any[]>;
 
   @Sanitize()
   hasBreakFast?: boolean;
@@ -76,10 +76,10 @@ class HotelEntity implements IBaseModel{
   @Sanitize()
   price?: number;
 
-  constructor(this_class?: HotelEntity){
-    if(this_class){
-      Object.assign(this, this_class)
-    }
+  constructor(this_class: Partial<HotelEntity> = {}){
+    Object.entries(this_class).forEach(([key, value]) => {
+      if(key in this) this[key] = value
+    })
   }
 }
 

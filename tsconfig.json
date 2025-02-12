@@ -1,8 +1,14 @@
 {
-  "extends": "@quasar/app-vite/tsconfig-preset",
+  "extends": "@quasar/app-vite/tsconfig-preset.json",
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ES5",
+    "lib": [
+      "es2019",
+      "dom"
+    ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true
   }
 }
